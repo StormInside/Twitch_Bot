@@ -1,0 +1,7 @@
+extends layout
+
+block content
+  each key, val in scripts
+    a(href="/command/"+key).btn.btn-primary #{key}
+    
+

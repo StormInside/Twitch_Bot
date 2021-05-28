@@ -1,0 +1,27 @@
+extends layout
+
+block content
+  h1 Default Config
+
+  if errors
+   ul.bg-danger
+    for error in errors
+     li!= error.msg
+
+  form(action='/login', method='POST')
+      h5
+        | Bot Username: 
+      p
+        input(name='username', type='text', value=(undefined===data ? '' : data.username)).form-control
+      h5  
+        | OAUTH TOKEN:
+      p
+        | (Login with your bot account to twitch and connect here #[a(href="https://twitchapps.com/tmi/") https://twitchapps.com/tmi/] 
+      p
+        input(name='password', type='text', value=(undefined===data ? '' : data.password)).form-control
+      h5
+        | Your Channel Name: 
+      p
+        input(name='channel', type='text', value=(undefined===data ? '' : data.channel)).form-control
+      
+      button(type='submit').btn.btn-primary Submit
