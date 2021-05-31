@@ -1,6 +1,18 @@
 {
-    "!dice": "enabled",
-    "!sosi": "Sosi.js",
-    "!1000-7" : "LetMeDie.js"
+    "!dice": {
+        "status": "enabled",
+        "type": "default",
+        "action": ""
+    },
+    "!sosi": {
+        "status": "enabled",
+        "type": "script",
+        "action": "Sosi.js"
+    },
+    "!1000-7": {
+        "status": "enabled",
+        "type": "script",
+        "action": "LetMeDie.js"
+    }
     
 }

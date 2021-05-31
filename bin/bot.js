@@ -12,8 +12,7 @@ const opts = {
   identity: {
     username: CONFIG.username,
     password: CONFIG.password,
-  },
-  channels: CONFIG.channels
+  }
 };
 const blacklist = CONFIG.blacklist;
 const channel = CONFIG.channels[0];
@@ -63,27 +62,8 @@ module.exports = {
     "context":{
       "username": channel
     }
-  }
-  // checkCommands : function(commandName){
-  //   var target = channel;
-  //   var context = {};
-  //   context.username = client;
-  //   if (commandName === '!dice' && commands['!dice'] === "enabled"){
-  //     if (enable_change_color){client.color(randomColor()).then((data) => {}).catch((err) => {});}
-  //     const num = rollDice();
-  //     client.say(target, `You rolled a ${num}`);
-  //   }
-  //   else if (commandName === '!'){
-  //     if (enable_change_color){client.color(randomColor()).then((data) => {}).catch((err) => {});}
-  //     client.action(target, "color");
-  //   }
-  //   else if (commandName in commands){
-  //     if (enable_change_color){client.color(randomColor()).then((data) => {}).catch((err) => {});}
-  //     scripts[commandName].execute({"client": client,
-  //                                   "target": target,
-  //                                   "context": context})
-  //   } 
-  // }
+  },
+  "commands": commands
 }
 
 
@@ -102,7 +82,10 @@ function rollDice () {
 function initScripts(commands){
   var scripts = {};
   for (var command in commands){
-    if (commands[command].endsWith(".js")){scripts[command] = require("../bot_scripts/"+commands[command]);}
+    var с = commands[command]
+    if (с["type"] === "script" && с["status"] === "enabled" ){
+      scripts[command] = require("../bot_scripts/"+с["action"]);
+    }
   }
   console.log(scripts);
   return scripts;
@@ -110,7 +93,7 @@ function initScripts(commands){
 
 function checkCommands(msg, target, context){
   const commandName = msg.trim();
-  if (commandName === '!dice' && commands['!dice'] === "enabled"){
+  if (commandName === '!dice' && commands['!dice']['status'] === "enabled"){
     if (enable_change_color){client.color(randomColor()).then((data) => {}).catch((err) => {});}
     const num = rollDice();
     client.say(target, `You rolled a ${num}`);
@@ -118,7 +101,7 @@ function checkCommands(msg, target, context){
   else if (commandName === '!'){
     if (enable_change_color){client.color(randomColor()).then((data) => {}).catch((err) => {});}
     client.action(target, "color");
-  }
+  } 
   else if (commandName in scripts){
     if (enable_change_color){client.color(randomColor()).then((data) => {}).catch((err) => {});}
     scripts[commandName].execute({
@@ -128,8 +111,8 @@ function checkCommands(msg, target, context){
       "context": context
     });
   }
-  else if (commandName in commands){
-    client.say(target, commands[commandName]);
+  else if (commandName in commands && commands[commandName]['status'] === "enabled"){
+    client.say(target, commands[commandName]["action"]);
   }
 }
 
