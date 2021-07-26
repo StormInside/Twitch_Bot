@@ -8,13 +8,12 @@ const bot = require("../bin/bot.js")
 var bot_scripts = bot.bot_scripts
 var bot_data = bot.bot_data
 var bot_commands = bot.commands
+var audio = bot.audio
 
 var scripts = []
 for (key in bot_scripts){
   scripts.push(key)
 }
-
-
 
 router.get('/', function(req, res, next) {
 
@@ -22,7 +21,7 @@ router.get('/', function(req, res, next) {
     res.redirect("/login");
   }
 
-  res.render('index', {scripts: scripts});
+  res.render('index', {scripts: scripts, audio: audio});
 });
 
 router.get('/login', function(req, res, next){
@@ -55,7 +54,13 @@ router.get('/command/:command', function(req, res) {
 
 });
 
-router.post('/login', validation.login_validation);
+router.get('/play_sound', function(req, res) {
+    var pl = bot.needPlay();
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ play: pl }));
+    bot.playFalse();
+})
 
+router.post('/login', validation.login_validation);
 
 module.exports = router;

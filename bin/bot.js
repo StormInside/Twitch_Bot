@@ -1,32 +1,36 @@
 const tmi = require('tmi.js');
-const Audic = require("audic")
 const fs = require('fs');
 
 var CONFIG = require('config');
-
 var commands = JSON.parse(fs.readFileSync("./config/commands.json"));
 
 const scripts = initScripts(commands);
+
+var need_play = false;
+
+const channel = CONFIG.channels[0];
 
 const opts = {
   identity: {
     username: CONFIG.username,
     password: CONFIG.password,
-  }
+  },
+  channels: [
+    channel
+  ]
 };
+
 const blacklist = CONFIG.blacklist;
-const channel = CONFIG.channels[0];
 const message_sound = CONFIG.message_sound;
 const volume = CONFIG.volume;
 const enable_change_color = CONFIG.enable_change_color;
 const enable_message_sound = CONFIG.enable_message_sound;
 
-
 const client = new tmi.client(opts);
 
 client.on('message', onMessageHandler);
 client.on('connected', onConnectedHandler);
-client.on("join", sendHi);
+// client.on("join", sendHi);
 
 client.connect();
 
@@ -56,6 +60,12 @@ module.exports = {
     client.say(channel, message);
   },
   bot_scripts: scripts,
+  audio: {
+    "volume": volume,
+    "message_sound": message_sound
+  },
+  needPlay,
+  playFalse,
   bot_data: {
     "client": client,
     "target": channel,
@@ -66,11 +76,15 @@ module.exports = {
   "commands": commands
 }
 
+function needPlay() {
+  return need_play;
+}
+function playFalse() {
+  need_play = false;
+}
 
 function playSound(sound, volume){
-  var audio = new Audic(sound);
-  audio.volume = volume;
-  audio.play();
+  need_play = true;
 }
 
 function rollDice () {
